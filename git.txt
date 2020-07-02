@@ -1,0 +1,9 @@
+--------------------------------------------------------------------------------
+
+CONFIGURAÇÃO INICIAL GIT:
+
+git config --global user.name "Caio Krauthamer"
+git config --global user.email "caio_k@hotmail.com"
+git config --global core.editor "vim"
+
+--------------------------------------------------------------------------------
