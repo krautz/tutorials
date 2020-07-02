@@ -1,0 +1,59 @@
+--------------------------------------------------------------------------------
+
+Baixar imagem CentOS7 minimal: http://isoredirect.centos.org/centos/7/isos/x86_64/
+
+Criar Máquina Virtual (virtual manager // gerenciador de máquinas virtuais)
+    - Clicar em "Nova Máquina Virtual"
+    - Selecionar mídia ISO
+    - Clicar em "Navegar..."
+    - Clicar no + (adicionar pool)
+    - Selecionar a pasta onde está a imagem do CentOS baixada
+    - Clicar no + (novo volume)
+    - Escolha um nome, formato "qcow2" e 50 GiB e em Concluir
+    - Selecione a ISO baixada e em avançar
+    - Use a memória desejada e 1 CPU e clique em avançar
+    - Selecione o armazenamento personalizado criado anteriormente e instale o CentOS 7
+
+Configure a VM para iniciar quando o sistema inicia (lampada -> opções de iniciaização -> iniciar quando iniciar o host)
+
+Configurar IP estático para VM (192.168.122.11)
+    - https://www.cyberciti.biz/faq/howto-setting-rhel7-centos-7-static-ip-configuration/
+    - vim /etc/sysconfig/network-scripts/ifcfg-eth0 e adicionar:
+        TYPE=Ethernet
+        PROXY_METHOD=none
+        BROWSER_ONLY=no
+        BOOTPROTO=dhcp
+        DEFROUTE=yes
+        IPV4_FAILURE_FATAL=no
+        IPV6INIT=yes
+        IPV6_AUTOCONF=yes
+        IPV6_DEFROUTE=yes
+        IPV6_FAILURE_FATAL=no
+        IPV6_ADDR_GEN_MODE=stable-privacy
+        NAME=eth0
+        UUID=9736deb9-b133-4da6-b030-6e830850908d
+        DEVICE=eth0
+        ONBOOT=yes
+        IPV6_PRIVACY=no
+        PREFIX=24
+        IPADDR=192.168.122.11
+
+Rodar systemctl restart network para permitir uso de rede
+
+Instalar vim
+
+Instalar git
+
+Rodar yum update
+
+Gerar chaves ssh da VM (ssh-keygen -t rsa)
+
+Colocar a chave pública do host no authorized_keys da VM
+
+Instalar docker (installdocker.txt nesse repo)
+
+Pegar da pasta save o gitconfig e bashes
+
+Instalar Ngrok (para configurar obter endpoint público)
+
+--------------------------------------------------------------------------------
