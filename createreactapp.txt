@@ -1,0 +1,98 @@
+= What is this =
+
+This describes the process of setting up a React App service from scratch.
+
+== Steps (For a commit by commit, check Piratis first commits) (Configuration files can be found in the Piratis repo or on wiki) ==
+
+=== Initialize empty react project ===
+
+ * Run `npx create-react-app my-app --typescript` (this will create an empty git project)
+
+  REMINDERS:
+
+
+          1. Update .gitignore with all of our rules
+
+          1. Fix dependencies that are dev (`npm i @testing-library/jest-dom @testing-library/react @testing-library/user-event @types/jest @types/node @types/react @types/react-dom typescript react-scripts --save-dev`)
+
+          1. Remove React logos
+
+          1. Update `public/manifest.json`:
+
+             * Remove React logos from field `icons`
+
+             * Update `name` and `short_name`
+
+          1. Update `public/index.html`:
+
+             * `<html lang="en">` -> `<html lang="pt-BR">`
+
+             * `<meta>` container `name` and `content` fields (those are what is shown when sending the pecazap link to someone)
+
+             * `<noscript>` message to one in portugueese
+
+          1. Remove React App.test.tsx
+
+          1. Apply our linter rules on generated react files
+
+          1. Update tsconfig.json to use `es2020` instead of `es5`
+
+          1. Add the following rule to tsconfig.json to allow relative imports: `"baseUrl": ".",`
+
+=== Rearrange git commits to fit already existing gitlab's project ===
+
+  * Add you fork and main remotes
+
+  * Rearrange the created branch to not be the master and have master's initial commit
+
+=== Remove react scripts ===
+
+ * Run `npm run eject`.
+
+  REMINDERS:
+
+          1. Fix dependencies that are dev (remember to manually remove them from package.json dependencies)
+          {{{
+          Babel deps:
+          npm i @babel/core  babel-eslint babel-jest babel-loader babel-plugin-named-asset-import babel-preset-react-app --save-dev
+
+          eslint deps:
+          npm i eslint eslint-config-react-app eslint-loader eslint-plugin-flowtype eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react eslint-plugin-react-hooks --save-dev
+
+          jest deps:
+          npm i jest jest-environment-jsdom-fourteen jest-resolve jest-watch-typeahead --save-dev
+
+          postcss deps:
+          npm i postcss-flexbugs-fixes postcss-loader postcss-normalize postcss-preset-env postcss-safe-parser  --save-dev
+
+          typescript deps:
+          npm i @typescript-eslint/eslint-plugin @typescript-eslint/parser tslib ts-pnp --save-dev
+
+          webpack:
+          npm i @svgr/webpack case-sensitive-paths-webpack-plugin html-webpack-plugin optimize-css-assets-webpack-plugin pnp-webpack-plugin terser-webpack-plugin webpack webpack-dev-server webpack-manifest-plugin workbox-webpack-plugin --save-dev
+
+          other deps:
+          npm i mini-css-extract-plugin --save-dev
+          }}}
+
+          1. Update start script to run on port 80 instead of 3000 by default (scripts/start.js on line 44)
+
+=== Insntall and Configure dev dependencies (jest tests, typescript configuration, eslint) ===
+
+  * Install eslint extra dev dependencies: `npm i eslint-plugin-typescript --save-dev`
+
+  * Add eslint rules (.eslintignore && .eslintrc.json)
+
+=== Configure npm scripts (test) ===
+
+  * Install npm-run-all dependency: `npm i npm-run-all --save-dev`
+
+  * Update test script on package.json to run tsx, eslint and jest (Remember to remove `scripts/test.js` file as it is no longer needed)
+
+=== Configure project's scripts (build rpm and containers) ===
+
+  * Add commit adding extra info to package.json (description, authors, license, homepage, etc...) and updating lock
+
+=== Porject Configuration ===
+
+  * "workbox-webpack-plugin" version must be v4
