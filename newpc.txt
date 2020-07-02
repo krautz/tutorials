@@ -1,0 +1,49 @@
+--------------------------------------------------------------------------------
+
+Escolher o nome do usuário: "caio" (irá setar a home nesse nome e fazer os bashes funcionarem)
+
+Editar tempo para hibernar o PC (Nunca desligar a tela)
+
+Diminuir a velocidade do mouse
+
+Adicionar atalho ctrl + alt + T para abrir o terminal (gnome-terminal é o comando)
+
+Instalar chrome
+    - Dark Theme Slack
+    - Dark Theme Youtube
+    - Entrar em todas contas (Google, Facebook, Email, Slack, Trello, Whats Web)
+    - Adicionar o inglês ao dicionario
+
+Instalar Spotify
+
+Instalar Atom
+    - Editor -> Font Size 26
+    - Editor -> Show Ident Guide True
+    - Editor -> Show Invisibles True
+    - Editor -> Soft Warp True
+    - Editor -> Soft Wrap at preffered line length True
+    - Editor -> Tab Length 4
+    - Editor -> Tab Type soft
+    - Packages:
+        - atom-typescript (TypeStrong)
+        - busy-signal (steelBrain)
+        - intentions (steelBrain)
+        - language-graphql (rmosologo)
+        - linter (steelBrain)
+        - linter-eslint (atomLinter)
+        - linter-eslint -> Settings -> list of scopes "source.js, source.jsx, source.js.jsx, source.flow, source.babel, source.js-semantic, source.ts"
+        - linter-tslint (atomLinter)
+        - linter-ui-default (steelBrain)
+        - sorter (dodekeract)
+
+Instalar Gerenciador de Máquinas Virtuais
+
+Atualizar pacotes
+
+Gerar chaves ssh e colocar no git (ssh-keygen -t rsa) (Pode necessitar atualizar authorized_keys em algumas VMs)
+
+Adicionar as configurações do git (git.txt nesse repo)
+
+Adicionar os bashes desejados (repo de bashes)
+
+--------------------------------------------------------------------------------

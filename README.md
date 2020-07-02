@@ -6,3 +6,4 @@ This repo includes tutorials on:
  - Git initial configuration
  - MongoDB
  - Setting an CentOS7 virtual machine
+ - Setting up a computer from 0
