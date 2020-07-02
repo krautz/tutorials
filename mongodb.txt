@@ -1,0 +1,291 @@
+~~~~~ MONGO DB ~~~~~~
+
+Formado por databases, que são um conjunto de collections, que são um conjunto de documents
+
+
+Shell:
+
+Usa engine de javascript. Pode-se definir variáveis, fazer loop, e passar variáveis para funções. Ex: criar 100 elementos.
+
+
+--------------------------------------------------------------------------------
+
+
+OPERAÇÕES SOBRE DBS:
+
+Mostrar comandos possíveis:
+    help
+
+Mostrar DB ativo:
+    db
+
+Mostrar todos DBs:
+    show db
+
+Mudar DB ativo:
+    use <db name>
+
+Mostrar versão do DB:
+    db.version()
+
+
+--------------------------------------------------------------------------------
+
+
+CREATE DATABASE, COLLECTIONS AND DOCUMENTS:
+
+Não tem como criar um database. Um database novo é criado ao se criar uma collection nova.
+
+"Criar" DB:
+    use <new db name> (isso ira colocar dentro de um DB novo, mas que só será criado de fato ao criar-se a 1a collection)
+
+Criar Collection:
+    db.createCollection("<collection name>")
+
+Criar Document:
+    db.<collection name>.insert(<object> or Array of <objects> for multiple documents) (retorna writeResult ou buckWriteResult)
+    db.<collection name>.insertOne(<object>) (retorna id criado)
+    db.<collection name>.insertMany(Array of <object>) (retorna array de ids criados)
+
+--------------------------------------------------------------------------------
+
+
+DELETE DATABASE, COLLECTIONS AND DOCUMENTS:
+
+Excluir DB ativo:
+    db.dropDatabase()
+
+Excluir collection:
+    db.<collection name>.drop
+
+Excluir Document:
+    db.<collection name>.remove(<query>, <justOne>)
+    db.<collection name>.deleteOne(<query>)
+    db.<collection name>.deleteMany(<query>)
+    <query> é obrigatório e é um objeto
+    <justOne> é opcional e é um boolean, o valor default é false
+
+    remove:
+        Remove um ou todos Documents que fizerem match com a <query>
+        Para remover apenas um Document use <justOne> como true
+        Retorna um WriteResult com o número de elementos removidos
+
+    deleteOne:
+        Remove o primeiro Document que fizer match com a <query>
+        Retorna um objeto com "acknowledged" e "deletedCount" (que será 0 ou 1)
+
+    deleteMany:
+        Remove todos Documents que fizerem match com a <query>
+        Retorna um objeto com "acknowledged" e "deletedCount" que será o número de elementos que fazem match com a <query>
+
+
+--------------------------------------------------------------------------------
+
+
+GET COLLECTIONS AND DOCUMENTS:
+
+Mostrar collections do DB ativo:
+    show collections
+
+Mostrar um Documento de uma collection (o primeiro que combina com a query):
+    db.<collection name>.findOne(<query>, <fields>) (retorna um objeto JSON do documento obtido)
+    <query>: filtrar quais Documents se quer
+    <fields>: filtrar quais campos dos Documents a serem retornados se quer
+
+Mostrar Documents de uma collection:
+    db.<collection name>.find(<query>, <fields>) (retorna um cursor). Quando um client faz uma query ao server, este irá retornar um cursor (sem documentos ainda). Ao receber o cursor, o client faz pedidos em batch de dados com o cursor passado. Este retorno do batch irá retornar um iterator para iterar sobre o batch retornado. O batch size pode não coincidir com o iterator size, pois ao chegar dado no cliente, ele pode iterar de 2 em 2, por exemplo. Batch size é o número de dados que o servidor retorna a cada request passando um cursor. Iterator size é quantos dados por vez são obtidos dos dados que já estão no cliente (que foram enviados pelo servidor na última batch).
+    Batch size inicial é 101 documentos ou 1Mb (retorna o que for atingido primeiro). O tamanho de um batch pode ir escalando até 16Mb, mas nunca ultrapassando 101 documentos.
+    Batch size (apenas número de documentos) e iterator size podem ser editados (no caso do mongodb shell, é 20 e 101, respectivamente). Por performance, nunca use um valor de batch size muito pequeno.
+    Alterar batch size (apenas número de documentos):
+        DBQuery.shellBatchSize = x (fica global para todas queries na sessão)
+        db.<collection name>.find().batchSize(x) (usa apenas para essa query)
+
+Operações com Cursor:
+
+    Toda operação do cursor ocorre no servidor
+
+    Deve-se atibuir o cursor a uma variável:
+        var cursor = db.<collection name>.find(<query>, <fields>)
+
+    Iterar um Document:
+        cursor.next()
+        Se o batch atual acabar, já obtém a próxima batch automaticamente.
+        Se o último batch acabar, ocorre raise de uma exception.
+
+    Iterar em iterator size Documents:
+        cursor
+
+    Verificar se tem mais Documents (retorna boolean):
+        cursor.hasNext()
+
+    Obter quantos Documents ainda tem no cursor:
+        cursor.objsLeftInBatch()
+
+    Obter todos Documentos em um cursor como array (exaure o cursor):
+        cursor.toArray()
+
+    Performar uma função com cada Documento (exaure o cursor):
+        cursor.forEach(<function>)
+
+    Contar número de Documents no cursor:
+        cursor.count()
+
+    Limitar número de Documents no cursor:
+        cursor.limit(<number>)
+
+    Pular alguns documentos no cursor:
+        cursor.skip(<number>)
+
+    Ordenar Documents no cursor:
+        cursor.sort(<object>) (<object> é um objeto chave, valor, onde a chave são nome de campos e o valor é 1 ou -1, 1 para ordenação em ordem crescente daquele campo e -1 para decrescente) (por padrão, find faz um sort crescente por _id)
+
+    Precedência de operações em cursor:
+        count > sort > skip > limit
+
+
+--------------------------------------------------------------------------------
+
+
+UPDATE DOCUMENTS:
+
+Sintaxe:
+    db.<collection name>.update(<query>, <update>, <params>)
+    db.<collection name>.updateOne(<query>, <update>, <params>)
+    db.<collection name>.updateMany(<query>, <update>, <params>)
+    db.<collection name>.replaceOne(<query>, <replacement>, <params>)
+    <query>, <update> e <replacement> são obrigatórios
+    Todos paramêtros são objetos
+
+update:
+    Altera apenas a primeira ocorrência encontrada que faz match a query
+    Para alterar mais ocorrências, usa-se a <option> {multi: true}
+    Retorna writeResult com número de Documents que deram match com a query e número de Documents alterados
+
+updateOne:
+    Altera apenas a primeira ocorrência encontrada que faz match a query
+    Retorna um objeto com campo acknowledged (bool) (se operação deu certo), matchCount (numberInt) (número de Documents que deram match a query, será 0 ou 1, pois o match para assim que ocorrer o primeiro match) e modifiedCount (numberInt) (número de Documents que foram alterados, será 0 ou 1 pois o match é no máximo de um Document)
+
+updateMany:
+    Altera todas ocorrências encontradas que faz match a query
+    Retorna um objeto com campo acknowledged (bool) (se operação deu certo), matchCount (numberInt) (número de Documents que deram match a query) e modifiedCount (numberInt) (número de Documents que foram alterados)
+
+replaceOne:
+    Encontra o primeiro Documento que faz match a query e o subistitui por outro
+    _id se mantém o mesmo
+    Retorna um objeto com campo acknowledged (bool) (se operação deu certo), matchCount (numberInt) (número de Documents que deram match a query, será 0 ou 1, pois o match para assim que ocorrer o primeiro match) e modifiedCount (numberInt) (número de Documents que foram alterados, será 0 ou 1 pois o match é no máximo de um Document)
+
+Operadores:
+
+    Operadores podem ser combinados em um único parâmetro <update>
+
+    $exists: Usado em <query> para verificar se um campo existe:
+        {<field name>: {$exists: false}}
+
+    $set: Usado em <update> para adicionar/alterar valores atribuídos a chaves:
+        { $set: {<field name>: <new value>, ...} }
+
+    $unset: Usado em <update> para remover chaves:
+        { $unset: {<field name>: <any value (usually 1)>, ...} }
+        obs: para remover chaves de um objeto deve-se usar a dot notation
+
+    $rename: Usado em <update> para alterar o nome de um campo:
+        {$rename: {<field name>: <new field name>, ...}}
+        obs: se o campo não existe, nada é feito
+        obs2: Por debaixo dos panos, mongo DB remove o campo e o re-adiciona
+
+    $currentDate: Usado em <update> para alterar atribuir a data atual a um campo:
+        {$currentDate: {<field name>: true, ...}}
+        obs: se o campo não existe, cria-se um novo com a data
+        obs2: Independente do valor do campo, ele irá virar a data atual
+
+Array operators:
+
+    $push: Usado em <update> para adicionar um valor ao fim de um array:
+        {$push: {<array field name>: element to add, ...}}
+        obs: Se o campo não existir, será criado um array com o elemento passado
+        obs2: Para adicionar mais de um elemento, se usa o modifier $each:
+            {$push: {<array field name>: {$each: [element1, element2, ...]}, ...}}
+
+    $addToSet: Usado em <update> para adicionar um valor ao fim de um array apenas se o valor é único:
+        {$addToSet: {<array field name>: element to add, ...}}
+        obs: Se o campo não existir, será criado um array com o elemento passado
+        obs2: Para adicionar mais de um elemento, se usa o modifier $each:
+            {$addToSet: {<array field name>: {$each: [element1, element2, ...]}, ...}}
+
+    $pop: Usado em <update> para remover o primeiro (-1) ou último (1) elemento de um array:
+        {$pop: {<array field name>: <1 | -1>}}
+
+    $pull: Usado em <update> para remover um elemento específico de um array ou elementos que satisfaçam uma condição:
+        {$pull: {<array field name>: <element | condition>, ...}}
+        obs: Para remover mais de um elemento específico, se usa o modifier $in:
+            {$pull: {<array field name>: {$in: [element1, element2, ...]}, ...}}
+        ob2: para condição, pode-se usar os operadtores condicionais $gt (greater than):
+            {$pull: {<array field name>: {$gt: 1910}, ...}}
+        obs3: Ao passar elemento específico, se este ocorre mais de uma vez, apenas a primeira ocorrência é removida
+
+    $pullAll: Usado em <update> para remover todos elemento passados de um array:
+        {$pullAll: {<array field name>: [<element1>, <element2>, ...], ...}}
+        obs: Para remover mais de um elemento específico, se usa o modifier $each:
+            {$pull: {<array field name>: {$each: [element1, element2, ...]}, ...}}
+        obs2: Se remove todas ocorrências de um elemento no array (remove duplicatas)
+
+    $: Usado em conjunto com outros operadores. Aponta dinamicamente para algum elemento do array. Representa a posição no array retornado pela <query>.
+    Se uma query retornar um campo de um array, este campo estará em $
+
+--------------------------------------------------------------------------------
+
+
+TYPES:
+
+String (BSON: "string"): ''
+
+Objeto (BSON: "object"): {}
+
+Array (BSON: "array"): []
+
+Boolean (BSON: "boolean"): true/false
+
+Double (BSON: "double"): só inserir um número (atenção: inteiro sem NumberInt() é convertido para double)
+
+NumberInt (BSON: "int"): NumberInt() -> Inteiro (Int32)
+
+NumberLong (BSON: "long"): NumberLong() -> Inteiro (Int64)
+
+ObjectId (BSON: "objectId"): ObjectId() -> Gerado automaticamente ao criar um documento novo no em "_id"
+
+Date (BSON: "date"): ISODate() ou new Date() -> Armazena datas
+
+Pode-se usar o operador $type para obter fazer uma query de tipo
+
+
+--------------------------------------------------------------------------------
+
+
+UTILITIES:
+
+
+
+
+--------------------------------------------------------------------------------
+
+
+NOTES:
+
+Equivalente para obter collection:
+    getCollection("<collection name>")
+    <collection name>
+
+O campo _id é reservado e é obrigatório. Pode ser criado de forma manual, mas não é recomendado
+
+Para acessar objetos de um documento deve-se usar a dot notation:
+    "parentObject.chieldObject.field"
+
+For many use cases in MongoDB, the denormalized data model where related data is stored within a single document will be optimal. However, in some cases, it makes sense to store related information in separate documents, typically in different collections or databases. (https://docs.mongodb.com/manual/reference/database-references/)
+
+Para tornar um campo único deve-se criar um index a partir dele:
+    db.<collection name>.createIndex( {<unique field>: 1}, { unique: true } )
+    É possível criar index composto baseado em mais de um parâmetro, basta passar mais de um campo no 1o parametro de createIndex. Caso isso seja feito, a tupla de valores deve ser única.
+    Quando um campo passa a ser um índice único, um Document inserido sem esse indice terá o campo criado e com valor null associado a ele. Como o campo é único, se tentar inserir outro Documento sem o campo index, então a inserção falha devido a duplicidade do valor null no campo index.
+
+Para obter todos indexes de uma collection:
+    db.<collection name>.getIndexes()
