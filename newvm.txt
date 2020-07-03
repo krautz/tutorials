@@ -56,4 +56,10 @@ Pegar da pasta save o gitconfig e bashes
 
 Instalar Ngrok (para configurar obter endpoint público)
 
+Instalar sshfs no Host para fazer mount de pastas
+
+Adicionar a linha 'user_allow_other' em /etc/fuse.conf no Host
+
+Para utilizar o bash_vm será necessário criar o diretório /root/projects na VM e ~/projects/vm no Host
+
 --------------------------------------------------------------------------------
