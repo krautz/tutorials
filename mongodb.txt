@@ -263,8 +263,40 @@ Pode-se usar o operador $type para obter fazer uma query de tipo
 
 UTILITIES:
 
+Não fazem parte da shell do mongo
 
+mongoexport:
+    Exporta dados de uma collection no formato JSON estendido ou CSV.
+    Comando:
+        mongoexport --host <HOST_NAME> --username <ADMIN USERNAME> --password <ADMIN USER PASSWORD> --authenticationDatabase <AUTHENTICATION DB (usualy "admin")> --db <DB_NAME> --collection <COLLECTION_NAME> --out <EXPORTED_FILE_NAME> --jsonArray (opcional, exporta dados como array de objetos) --query '<QUERY>'(opcional, passado uma query igual ao get de dados para filtrar os dados exportados) --type (opcional, para exportar como csv em vez de json)
 
+mongoimport:
+    Importa uma collection para o mongoDB (criada com mongoexport). Se a collection não existir, ele a cria. O arquivo de input pode ser JSON estendido ou CSV.
+    Comando:
+        mongoimport --host <HOST_NAME> --username <ADMIN USERNAME> --password <ADMIN USER PASSWORD> --authenticationDatabase <AUTHENTICATION DB (usualy "admin")> --db <DB_NAME> --collection <COLLECTION_NAME> --file <IMPORT_FILE_NAME> --jsonArray (opcional, exporta dados como array de objetos) --query '<QUERY>'(opcional, passado uma query igual ao get de dados para filtrar os dados exportados) --type (opcional, para exportar como csv em vez de json)
+
+mongodump:
+    Exporta em formato binário. Exporta junto os indexes e mantem os tipos BSON.
+    Exporta-se todos databases menos o "local". Para exportar apenas específicos se usa a opção --db. O mesmo é valido para collections com a opção --collection.
+    Comando (1o para gerar pasta, 2o para gerar comprimido):
+        mongoexport --host <HOST_NAME> --username <ADMIN USERNAME> --password <ADMIN USER PASSWORD> --authenticationDatabase <AUTHENTICATION DB (usualy "admin")> --db <DB_NAME> (opcional) --collection <COLLECTION_NAME> (opcional) --out <EXPORTED_FILES_FOLDER> (opcional, se não passado cria-se uma pasta dump)
+        mongoexport --host <HOST_NAME> --username <ADMIN USERNAME> --password <ADMIN USER PASSWORD> --authenticationDatabase <AUTHENTICATION DB (usualy "admin")> --db <DB_NAME> (opcional) --collection <COLLECTION_NAME> (opcional) --archive=<FILE_NAME> --gzip
+
+mongorestore:
+    Restaura um backup binário (criado com mongodump). Indexes são Restaurados também.
+    Comando (1o para restaurar de pasta, 2o de comprimido):
+        mongorestore --host <HOST_NAME> --username <ADMIN USERNAME> --password <ADMIN USER PASSWORD> --authenticationDatabase <AUTHENTICATION DB (usualy "admin")> --dir <EXPORTED_FILES_FOLDER> (opcional, se não passado usa-se a pasta "dump")
+        mongorestore --host <HOST_NAME> --username <ADMIN USERNAME> --password <ADMIN USER PASSWORD> --authenticationDatabase <AUTHENTICATION DB (usualy "admin")> --archive=<FILE_NAME> --gzip
+
+mongostat:
+    Retorna estatísticas em tempo real do servidor mongo
+    Comando:
+        mongostat --host <HOST_NAME> --username <ADMIN USERNAME> --password <ADMIN USER PASSWORD> --authenticationDatabase <AUTHENTICATION DB (usualy "admin")>
+
+mongotop:
+    Mostra operações top de escrita e leitura
+    Comando:
+        mongotop <NUMBER> (opcional intervalo em segundos para atualizar a execução do comando) --host <HOST_NAME> --username <ADMIN USERNAME> --password <ADMIN USER PASSWORD> --authenticationDatabase <AUTHENTICATION DB (usualy "admin")>
 
 --------------------------------------------------------------------------------
 
